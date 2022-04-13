@@ -7,7 +7,7 @@ WIDTH, HEIGHT = 800, 800                            # WINDOW SIZE
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Planet Simulation")     # TITLE
 
-FONT = pygame.font.SysFont("comicsans", 12)
+FONT = pygame.font.SysFont("cosolas", 16)
 
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
@@ -125,6 +125,13 @@ def main():
             planet.update_position(planets)
             planet.draw(WIN)
 
+        # Draw fps
+        fps = FONT.render(f"FPS: {round(delta_time.get_fps(), 2)}", 1, WHITE)
+        WIN.blit(fps, (0, 0))
+        # Draw time
+        seconds = FONT.render(f"Seconds: {round(pygame.time.get_ticks() / 1000, 2)}", 1, WHITE)
+        WIN.blit(seconds, (0, 1.5 * HEIGHT / 100))
+        
         pygame.display.update()
 
     pygame.quit()
