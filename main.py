@@ -1,12 +1,11 @@
-from ast import With
 import pygame
 import math
 pygame.init()
 
-# WINDOW SIZE
-WIDTH, HEIGHT = 800, 800
+
+WIDTH, HEIGHT = 800, 800                            # WINDOW SIZE
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Planet Simulation")   # TITLE
+pygame.display.set_caption("Planet Simulation")     # TITLE
 
 FONT = pygame.font.SysFont("comicsans", 12)
 
@@ -16,10 +15,11 @@ BLUE = (100, 149, 237)
 RED = (188, 39, 50)
 DARK_GREY = (80, 78, 81)
 
+
 class Planet:
     AU = 149.6e6 * 1000         # Distance from earth to sun
     G = 6.67428e-11             # Atraction between objects
-    ZOOM = 200 / AU             # 1 AU = 100 pixels
+    ZOOM = 100 / AU             # 200 / AU = 200 pixels per AU
     TIMESCALE = 3600*24         # 1300 = 1 day per second
 
 
@@ -37,8 +37,10 @@ class Planet:
         self.y_vel = initial_velocity
 
     def draw(self, window):
+        # 0 now equals center
         x = self.x * self.ZOOM + WIDTH / 2
         y = self.y * self.ZOOM + HEIGHT / 2
+
 
         # orbit drawn
         if len(self.orbit) > 2:
@@ -51,7 +53,8 @@ class Planet:
 
             pygame.draw.lines(window, self.color, False, orbit_points, 2)
 
-        pygame.draw.circle(window, self.color, (x, y), self.radius)
+        # draw planet
+        pygame.draw.circle(window, self.color, (x, y), self.radius * self.ZOOM * 10**9)
 
         # drawn distance
         if not self.is_sun:
