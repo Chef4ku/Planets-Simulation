@@ -1,3 +1,4 @@
+from ast import With
 import pygame
 import math
 pygame.init()
@@ -7,6 +8,7 @@ WIDTH, HEIGHT = 800, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Planet Simulation")   # TITLE
 
+FONT = pygame.font.SysFont("comicsans", 12)
 
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
@@ -18,7 +20,7 @@ class Planet:
     AU = 149.6e6 * 1000         # Distance from earth to sun
     G = 6.67428e-11             # Atraction between objects
     ZOOM = 200 / AU             # 1 AU = 100 pixels
-    TIMESCALE = 3600*24         # 1 day per second
+    TIMESCALE = 3600*24         # 1300 = 1 day per second
 
 
     def __init__(self, x, y, radius, color, mass, initial_velocity, is_sun = False):
@@ -38,7 +40,23 @@ class Planet:
         x = self.x * self.ZOOM + WIDTH / 2
         y = self.y * self.ZOOM + HEIGHT / 2
 
+        # orbit drawn
+        if len(self.orbit) > 2:
+            orbit_points = []
+            for point in self.orbit:
+                orbit_x, orbit_y = point
+                orbit_x = orbit_x * self.ZOOM + WIDTH / 2
+                orbit_y = orbit_y * self.ZOOM + HEIGHT / 2
+                orbit_points.append((orbit_x, orbit_y))
+
+            pygame.draw.lines(window, self.color, False, orbit_points, 2)
+
         pygame.draw.circle(window, self.color, (x, y), self.radius)
+
+        # drawn distance
+        if not self.is_sun:
+            distance_text = FONT.render(f"{round(self.distance_to_sun/1000, 1)} KM", 1, WHITE)
+            window.blit(distance_text, (x - distance_text.get_width()/2, y - distance_text.get_height()/2))
 
     def attraction(self, other):
         distance_x = other.x - self.x
@@ -61,9 +79,9 @@ class Planet:
         for planet in planets:
             if self == planet: 
                 continue
-            force_x, force_y = self.attraction(planet)
-            total_force_x += force_x
-            total_force_y += force_y
+            fx, fy = self.attraction(planet)
+            total_force_x += fx
+            total_force_y += fy
         
         # a = f / m
         self.x_vel += total_force_x / self.mass * self.TIMESCALE
@@ -99,7 +117,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        # Draw planets
+        # Draw planets and calculate position
         for planet in planets:
             planet.update_position(planets)
             planet.draw(WIN)
